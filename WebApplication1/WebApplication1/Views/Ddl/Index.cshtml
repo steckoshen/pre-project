@@ -1,0 +1,150 @@
+﻿@model WebApplication1.Models.Order
+@{
+    ViewBag.Title = "Drop Down List Test";
+    ViewBag.id = "cc";
+
+    
+}
+<head><script src="../../Scripts/jquery-1.10.2.min.js" type="text/javascript"></script> </head>
+
+<h2>@ViewBag.Message</h2>
+<h2>@ViewBag.id</h2>
+
+<p>
+    @Html.Label("Customers:")
+    @Html.DropDownList("Customers", (SelectList)ViewBag.Selectlist)
+</p>
+
+<p>
+    @Html.Label("Orders:")
+    <select id="Orders" name="orders"><option>------</option></select>
+</p>
+
+<p>
+    @Html.Label("Products:")
+    <select id="Products" name="products"><option>------</option></select>
+</p>
+
+<p>
+    <input type="button" id="ButtonReset" value="Clear" />
+    <input type="button" id="ButtonSubmit" value="Show Details" />
+</p>
+
+<hr />
+
+<div id="ProductInfo"></div>
+
+<script type="text/javascript" language="javascript">
+<!--
+    $(document).ready(function () {
+        $('#Customers').change(function () { ChangeCustomer(); });
+        $('#Orders').change(function () { ChangeOrder(); });
+        $('#Products').change(function () { ChangeProduct(); });
+        $('#ButtonSubmit').hide().click(function () { DisplayProductInfo(); });
+    });
+
+    function ChangeCustomer() {
+        var selectedvalue = $('#Customers option:selected').val();
+        if ($.trim(selectedvalue).length > 0) {
+            GetOrders(selectedvalue);
+        }
+        else {
+
+        }
+    }
+
+    function ChangeOrder() {
+        var selectedvalue = $('#Orders option:selected').val();
+
+        if($.trim(selectedvalue).length > 0) {
+            GetProducts(selectedvalue);
+        }
+    }
+
+    function ChangeProduct()
+    {
+        var selectedvalue = $('#Products option:selected').val();
+
+        if ($.trim(selectedvalue).length > 0) {
+            $('#ButtonSubmit').show();
+        }
+        else {
+            $('#ButtonSubmit').hide();
+            $('#ProductInfo').empty();
+        }
+
+    }
+
+    function GetOrders(customerID) {
+        $.ajax({
+            url: '@Url.Action("Orders", "Ddl")',
+            data: { customerID: customerID },
+            type: 'post',
+            cache: false,
+            async: false,
+            dataType: 'json',
+            success: function (data)
+            {
+                if (data.length > 0) {
+                    $('#Orders').empty();
+                    $('#Orders').append($('<option></option>').val('').text('please select an order'));
+/*                    alert('data length:' + data.length);
+                    for (var i = 0; i < data.length; i++) {
+                        for (var j in data[i]) {
+                            alert(data[i][j]);
+                        }
+                    }*/
+                    $.each(data, function (k, v) {
+                        //alert('v.key :' + v.Key + ' v.value: ' + v.Value )
+                        $('#Orders').append($('<option></option>').val(v.Key).text(v.Value));
+                    });
+                }
+            }
+        })
+    }
+
+
+    function GetProducts(orderID) {
+        $.ajax({
+            url: '@Url.Action("Products", "Ddl")',
+            data: { orderID: orderID },
+            type: 'post',
+            cache: false,
+            async: false,
+            dataType: 'json',
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#Products').empty();
+                    $('#Products').append($('<option></option>').val('').text('please select an product'));
+                    $.each(data, function (k, v) {
+                        $('#Products').append($('<option></option>').val(v.Key).text(v.Value));
+                    });
+
+                }
+            }
+        })
+    }
+
+    function DisplayProductInfo() {
+        var selectedValue = $('#Products option:selected').val();
+        if ($.trim(selectedValue).length > 0) {
+            $.ajax({
+                url: '@Url.Action("ProductInfo", "Ddl")',
+                data: {productID: selectedValue},
+                type: 'post',
+                cache: false,
+                async: false,
+                dataType: 'html',
+                success: function (data) {
+                    if (data.length > 0) {
+                        $('#ProductInfo').empty();
+                        $('#ProductInfo').html(data);
+                    }
+                }
+            });
+        }
+    }
+
+</script>
+
+
